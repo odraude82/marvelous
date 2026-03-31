@@ -1,0 +1,197 @@
+<div class="dashboard-container">
+  <h1 class="page-title">
+    <mat-icon>dashboard</mat-icon>
+    Visão Consolidada
+  </h1>
+
+  @if (loading) {
+    <div class="loading-state">
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      <p>Carregando dados...</p>
+    </div>
+  }
+
+  @if (error) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <mat-icon color="warn">error</mat-icon>
+        {{ error }}
+      </mat-card-content>
+    </mat-card>
+  }
+
+  @if (dashboard && !loading) {
+    <!-- KPI Cards Row -->
+    <div class="kpi-row">
+      <mat-card class="kpi-card kpi-primary">
+        <mat-card-content>
+          <mat-icon class="kpi-icon">account_balance_wallet</mat-icon>
+          <div class="kpi-info">
+            <span class="kpi-label">Valor Total em Estoque</span>
+            <span class="kpi-value">{{ dashboard.totalStockValue | currency:'BRL':'symbol':'1.2-2' }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-blue">
+        <mat-card-content>
+          <mat-icon class="kpi-icon">inventory_2</mat-icon>
+          <div class="kpi-info">
+            <span class="kpi-label">Total de Produtos</span>
+            <span class="kpi-value">{{ dashboard.totalProducts }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card kpi-green">
+        <mat-card-content>
+          <mat-icon class="kpi-icon">store</mat-icon>
+          <div class="kpi-info">
+            <span class="kpi-label">Fornecedores</span>
+            <span class="kpi-value">{{ dashboard.totalSuppliers }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="kpi-card" [class.kpi-warn]="dashboard.lowStockCount > 0" [class.kpi-ok]="dashboard.lowStockCount === 0">
+        <mat-card-content>
+          <mat-icon class="kpi-icon">warning</mat-icon>
+          <div class="kpi-info">
+            <span class="kpi-label">Alertas de Estoque Baixo</span>
+            <span class="kpi-value">{{ dashboard.lowStockCount }}</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Middle Row -->
+    <div class="content-row">
+      <!-- Low Stock Alerts -->
+      <mat-card class="section-card alert-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="header-icon warn">warning_amber</mat-icon>
+          <mat-card-title>Alertas de Estoque Baixo</mat-card-title>
+          <mat-card-subtitle>Itens abaixo do mínimo configurado</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          @if (dashboard.lowStockItems.length === 0) {
+            <div class="empty-state">
+              <mat-icon color="primary">check_circle</mat-icon>
+              <p>Todos os itens com estoque adequado!</p>
+            </div>
+          } @else {
+            <table mat-table [dataSource]="dashboard.lowStockItems" class="mat-elevation-z0 full-width">
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>Produto</th>
+                <td mat-cell *matCellDef="let item">
+                  <span class="item-name">{{ item.productName }}</span>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="current">
+                <th mat-header-cell *matHeaderCellDef>Atual</th>
+                <td mat-cell *matCellDef="let item">
+                  <mat-chip class="stock-chip warn-chip">{{ item.currentStock }}</mat-chip>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="min">
+                <th mat-header-cell *matHeaderCellDef>Mínimo</th>
+                <td mat-cell *matCellDef="let item">{{ item.minStock }}</td>
+              </ng-container>
+              <ng-container matColumnDef="unit">
+                <th mat-header-cell *matHeaderCellDef>Unidade</th>
+                <td mat-cell *matCellDef="let item">{{ item.unitOfMeasure }}</td>
+              </ng-container>
+              <ng-container matColumnDef="supplier">
+                <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+                <td mat-cell *matCellDef="let item">{{ item.supplierName }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="lowStockColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: lowStockColumns;" class="table-row"></tr>
+            </table>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Top Suppliers by Spending -->
+      <mat-card class="section-card">
+        <mat-card-header>
+          <mat-icon mat-card-avatar class="header-icon primary">bar_chart</mat-icon>
+          <mat-card-title>Maiores Gastos por Fornecedor</mat-card-title>
+          <mat-card-subtitle>Ranking de fornecedores por valor total comprado</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          @if (dashboard.topSuppliers.length === 0) {
+            <div class="empty-state">
+              <mat-icon>info</mat-icon>
+              <p>Nenhuma compra registrada ainda.</p>
+            </div>
+          } @else {
+            <div class="supplier-chart">
+              @for (s of dashboard.topSuppliers; track s.supplierId; let i = $index) {
+                <div class="supplier-bar-item">
+                  <div class="supplier-bar-header">
+                    <span class="rank-badge">{{ i + 1 }}°</span>
+                    <span class="supplier-name">{{ s.supplierName }}</span>
+                    <span class="supplier-spent">{{ s.totalSpent | currency:'BRL':'symbol':'1.2-2' }}</span>
+                  </div>
+                  <mat-progress-bar
+                    mode="determinate"
+                    [value]="getSupplierBarWidth(s.totalSpent)"
+                    [class]="'bar-' + (i % 3)">
+                  </mat-progress-bar>
+                </div>
+              }
+            </div>
+          }
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <!-- Price Variation Row -->
+    <mat-card class="section-card price-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar class="header-icon accent">show_chart</mat-icon>
+        <mat-card-title>Variação de Preço das Últimas Compras</mat-card-title>
+        <mat-card-subtitle>Comparativo entre a penúltima e última compra de cada produto</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (dashboard.recentPriceVariations.length === 0) {
+          <div class="empty-state">
+            <mat-icon>info</mat-icon>
+            <p>Histórico insuficiente para comparativo. Registre ao menos 2 compras por produto.</p>
+          </div>
+        } @else {
+          <table mat-table [dataSource]="dashboard.recentPriceVariations" class="mat-elevation-z0 full-width">
+            <ng-container matColumnDef="product">
+              <th mat-header-cell *matHeaderCellDef>Produto</th>
+              <td mat-cell *matCellDef="let item"><strong>{{ item.productName }}</strong></td>
+            </ng-container>
+            <ng-container matColumnDef="previous">
+              <th mat-header-cell *matHeaderCellDef>Preço Anterior</th>
+              <td mat-cell *matCellDef="let item">{{ item.previousPrice | currency:'BRL':'symbol':'1.2-2' }}</td>
+            </ng-container>
+            <ng-container matColumnDef="current">
+              <th mat-header-cell *matHeaderCellDef>Preço Atual</th>
+              <td mat-cell *matCellDef="let item"><strong>{{ item.currentPrice | currency:'BRL':'symbol':'1.2-2' }}</strong></td>
+            </ng-container>
+            <ng-container matColumnDef="variation">
+              <th mat-header-cell *matHeaderCellDef>Variação</th>
+              <td mat-cell *matCellDef="let item">
+                <div class="variation-cell" [class]="getVariationClass(item.variationPercent)">
+                  <mat-icon>{{ getVariationIcon(item.variationPercent) }}</mat-icon>
+                  <span>{{ item.variationPercent | number:'1.2-2' }}%</span>
+                </div>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="supplier">
+              <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+              <td mat-cell *matCellDef="let item">{{ item.supplierName }}</td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="priceColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: priceColumns;" class="table-row"></tr>
+          </table>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+</div>

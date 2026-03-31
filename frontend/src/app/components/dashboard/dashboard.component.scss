@@ -1,0 +1,273 @@
+.dashboard-container {
+  max-width: 1400px;
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #1a237e;
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  font-weight: 600;
+
+  mat-icon {
+    font-size: 32px;
+    height: 32px;
+    width: 32px;
+  }
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.error-card {
+  background: #ffebee;
+  margin-bottom: 16px;
+
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #c62828;
+  }
+}
+
+/* KPI Cards */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.kpi-card {
+  mat-card-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px !important;
+  }
+
+  .kpi-icon {
+    font-size: 40px;
+    height: 40px;
+    width: 40px;
+    opacity: 0.9;
+  }
+
+  .kpi-info {
+    display: flex;
+    flex-direction: column;
+
+    .kpi-label {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      opacity: 0.85;
+      margin-bottom: 4px;
+    }
+
+    .kpi-value {
+      font-size: 1.7rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+  }
+
+  &.kpi-primary {
+    background: linear-gradient(135deg, #1a237e, #283593);
+    color: white;
+  }
+
+  &.kpi-blue {
+    background: linear-gradient(135deg, #0277bd, #0288d1);
+    color: white;
+  }
+
+  &.kpi-green {
+    background: linear-gradient(135deg, #2e7d32, #388e3c);
+    color: white;
+  }
+
+  &.kpi-warn {
+    background: linear-gradient(135deg, #e65100, #f57c00);
+    color: white;
+  }
+
+  &.kpi-ok {
+    background: linear-gradient(135deg, #2e7d32, #43a047);
+    color: white;
+  }
+}
+
+/* Content Row */
+.content-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.section-card {
+  .header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50%;
+    font-size: 22px;
+
+    &.warn {
+      background: #fff3e0;
+      color: #f57c00;
+    }
+    &.primary {
+      background: #e3f2fd;
+      color: #1565c0;
+    }
+    &.accent {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+  }
+}
+
+/* Alert card */
+.alert-card {
+  border-left: 4px solid #f57c00;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  color: #888;
+  text-align: center;
+
+  mat-icon {
+    font-size: 48px;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+}
+
+/* Supplier chart bars */
+.supplier-chart {
+  padding: 8px 0;
+}
+
+.supplier-bar-item {
+  margin-bottom: 16px;
+
+  .supplier-bar-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 6px;
+    gap: 8px;
+  }
+
+  .rank-badge {
+    background: #1a237e;
+    color: white;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .supplier-name {
+    flex: 1;
+    font-weight: 500;
+  }
+
+  .supplier-spent {
+    font-weight: 700;
+    color: #1565c0;
+  }
+
+  mat-progress-bar {
+    height: 8px !important;
+    border-radius: 4px;
+
+    &.bar-0 ::ng-deep .mdc-linear-progress__bar-inner {
+      background-color: #1565c0 !important;
+      border-color: #1565c0 !important;
+    }
+    &.bar-1 ::ng-deep .mdc-linear-progress__bar-inner {
+      background-color: #2e7d32 !important;
+      border-color: #2e7d32 !important;
+    }
+    &.bar-2 ::ng-deep .mdc-linear-progress__bar-inner {
+      background-color: #e65100 !important;
+      border-color: #e65100 !important;
+    }
+  }
+}
+
+/* Tables */
+.full-width {
+  width: 100%;
+}
+
+.table-row:hover {
+  background: #f5f5f5;
+}
+
+/* Stock chip */
+.stock-chip {
+  &.warn-chip {
+    background-color: #ffecb3 !important;
+    color: #e65100 !important;
+    font-weight: 700;
+  }
+}
+
+/* Price variation */
+.variation-cell {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 600;
+
+  &.variation-up {
+    color: #c62828;
+    mat-icon { color: #c62828; }
+  }
+  &.variation-down {
+    color: #2e7d32;
+    mat-icon { color: #2e7d32; }
+  }
+  &.variation-neutral {
+    color: #666;
+  }
+}
+
+/* Price card */
+.price-card {
+  border-left: 4px solid #1565c0;
+}
