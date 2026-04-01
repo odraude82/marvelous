@@ -27,6 +27,7 @@ export class LayoutComponent {
     { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
     { label: 'Fornecedores', icon: 'store', route: '/suppliers' },
     { label: 'Produtos', icon: 'inventory_2', route: '/products' },
-    { label: 'Compras', icon: 'shopping_cart', route: '/purchases' }
+    { label: 'Compras', icon: 'shopping_cart', route: '/purchases' },
+    { label: 'Orçamentos', icon: 'request_quote', route: '/budgets' }
   ];
 }

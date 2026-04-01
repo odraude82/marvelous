@@ -5,11 +5,12 @@ A project that clients manage yours suppliers
 
 Antes de iniciar, certifique-se de ter as seguintes ferramentas instaladas:
 
-- [Java 17](https://adoptium.net/)
+- [Java 21](https://adoptium.net/)
 - [Maven](https://maven.apache.org/) (ou use o wrapper `mvnw` incluído no projeto)
 - [Node.js](https://nodejs.org/) (versão recomendada: LTS)
 - [npm](https://www.npmjs.com/) 11.9.0+
 - [Angular CLI](https://angular.dev/tools/cli) 21+
+- [PostgreSQL](https://www.postgresql.org/) 14+
 
 ---
 
@@ -17,7 +18,31 @@ Antes de iniciar, certifique-se de ter as seguintes ferramentas instaladas:
 
 ### Configuração do ambiente
 
-O backend utiliza **Spring Boot 3.5**, **Java 17** e banco de dados em memória **H2** (não requer instalação de banco de dados externo).
+O backend utiliza **Spring Boot 3.5**, **Java 21** e banco de dados **PostgreSQL**.
+
+#### Configurar o PostgreSQL
+
+Crie um banco de dados no PostgreSQL:
+
+```sql
+CREATE DATABASE marvelousdb;
+```
+
+Por padrão, o backend conecta com as seguintes configurações:
+
+| Parâmetro | Valor padrão |
+|-----------|-------------|
+| URL       | `jdbc:postgresql://localhost:5432/marvelousdb` |
+| Usuário   | `postgres` |
+| Senha     | `postgres` |
+
+Essas configurações podem ser sobrescritas via variáveis de ambiente:
+
+```bash
+export DATABASE_URL=jdbc:postgresql://localhost:5432/marvelousdb
+export DATABASE_USERNAME=seu_usuario
+export DATABASE_PASSWORD=sua_senha
+```
 
 ### Executar localmente
 
@@ -29,11 +54,6 @@ cd backend
 > No Windows, use `mvnw.cmd spring-boot:run`
 
 A API estará disponível em: `http://localhost:8080`
-
-O console do H2 (banco de dados em memória) pode ser acessado em: `http://localhost:8080/h2-console`
-- **JDBC URL:** `jdbc:h2:mem:marvelousdb`
-- **Usuário:** `sa`
-- **Senha:** *(deixe em branco)*
 
 ### Executar os testes
 
@@ -79,6 +99,25 @@ Os artefatos serão gerados na pasta `dist/`.
 cd frontend
 npm test
 ```
+
+---
+
+## Funcionalidades
+
+### Fornecedores
+Cadastro e gerenciamento de fornecedores com informações como CNPJ/CPF, contato e categoria de produtos.
+
+### Produtos
+Controle de estoque com alertas de estoque mínimo e acompanhamento de preços de custo.
+
+### Compras
+Registro de histórico de compras com atualização automática de estoque e preço de custo.
+
+### Comparação de Orçamentos
+Permite cadastrar orçamentos de diferentes fornecedores para o mesmo item e compará-los em uma tela dedicada. O sistema **sugere automaticamente a melhor opção** com base no menor preço unitário, destacando visualmente o fornecedor mais vantajoso.
+
+### Dashboard
+Painel com métricas gerais: valor total em estoque, alertas de estoque baixo, maiores fornecedores por gasto e variação de preços nas últimas compras.
 
 ---
 
