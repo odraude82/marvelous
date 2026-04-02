@@ -36,6 +36,25 @@ export interface Purchase {
   createdAt?: string;
 }
 
+export interface BudgetQuote {
+  id?: number;
+  budgetGroupId?: number;
+  supplierName: string;
+  unitPrice: number;
+  quantity?: number;
+  notes?: string;
+  createdAt?: string;
+}
+
+export interface BudgetGroup {
+  id?: number;
+  title: string;
+  description?: string;
+  createdAt?: string;
+  quotes: BudgetQuote[];
+  bestQuoteId?: number;
+}
+
 export interface DashboardData {
   totalStockValue: number;
   totalProducts: number;

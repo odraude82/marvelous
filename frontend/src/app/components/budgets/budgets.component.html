@@ -1,0 +1,127 @@
+<div class="page-container">
+  <mat-card class="header-card">
+    <mat-card-header>
+      <mat-card-title>Comparação de Orçamentos</mat-card-title>
+      <mat-card-subtitle>Compare orçamentos de diferentes fornecedores e encontre a melhor opção</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" (click)="openGroupForm()">
+        <mat-icon>add</mat-icon>
+        Nova Comparação
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  @if (loading) {
+    <mat-card class="loading-card">
+      <mat-card-content>Carregando orçamentos...</mat-card-content>
+    </mat-card>
+  }
+
+  @if (!loading && groups.length === 0) {
+    <mat-card class="empty-card">
+      <mat-card-content>
+        <mat-icon class="empty-icon">request_quote</mat-icon>
+        <p>Nenhuma comparação de orçamentos cadastrada.</p>
+        <p>Clique em <strong>Nova Comparação</strong> para começar.</p>
+      </mat-card-content>
+    </mat-card>
+  }
+
+  <mat-accordion class="groups-accordion" multi>
+    @for (group of groups; track group.id) {
+      <mat-expansion-panel class="group-panel">
+        <mat-expansion-panel-header>
+          <mat-panel-title class="panel-title">
+            <mat-icon class="panel-icon">compare_arrows</mat-icon>
+            <span>{{ group.title }}</span>
+            @if (group.quotes.length > 0) {
+              <mat-chip class="quotes-chip" [highlighted]="true">{{ group.quotes.length }} orçamento(s)</mat-chip>
+            }
+          </mat-panel-title>
+          <mat-panel-description>
+            @if (group.description) {
+              {{ group.description }}
+            }
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="panel-actions">
+          <button mat-stroked-button color="primary" (click)="openAddQuote(group)">
+            <mat-icon>add</mat-icon>
+            Adicionar Orçamento
+          </button>
+          <button mat-stroked-button (click)="openGroupForm(group)">
+            <mat-icon>edit</mat-icon>
+            Editar
+          </button>
+          <button mat-stroked-button color="warn" (click)="deleteGroup(group)">
+            <mat-icon>delete</mat-icon>
+            Excluir
+          </button>
+        </div>
+
+        @if (group.quotes.length === 0) {
+          <p class="no-quotes">Nenhum orçamento adicionado ainda. Clique em "Adicionar Orçamento" para incluir propostas de fornecedores.</p>
+        } @else {
+          <div class="best-hint">
+            <mat-icon class="hint-icon">emoji_events</mat-icon>
+            <span>O orçamento destacado em verde representa a <strong>melhor opção</strong> com base no menor preço unitário.</span>
+          </div>
+
+          <table mat-table [dataSource]="group.quotes" class="quotes-table">
+            <ng-container matColumnDef="supplier">
+              <th mat-header-cell *matHeaderCellDef>Fornecedor</th>
+              <td mat-cell *matCellDef="let quote">
+                <span [class.best-supplier]="isBestQuote(group, quote.id)">{{ quote.supplierName }}</span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="unitPrice">
+              <th mat-header-cell *matHeaderCellDef>Preço Unitário</th>
+              <td mat-cell *matCellDef="let quote">
+                <span [class.best-price]="isBestQuote(group, quote.id)">
+                  {{ quote.unitPrice | currency:'BRL':'symbol':'1.2-2' }}
+                  @if (isBestQuote(group, quote.id)) {
+                    <mat-icon class="best-icon" matTooltip="Melhor preço!">emoji_events</mat-icon>
+                  }
+                </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="quantity">
+              <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+              <td mat-cell *matCellDef="let quote">{{ quote.quantity ?? '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="notes">
+              <th mat-header-cell *matHeaderCellDef>Observações</th>
+              <td mat-cell *matCellDef="let quote">{{ quote.notes ?? '—' }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="best">
+              <th mat-header-cell *matHeaderCellDef>Status</th>
+              <td mat-cell *matCellDef="let quote">
+                @if (isBestQuote(group, quote.id)) {
+                  <mat-chip class="best-chip">✓ Melhor opção</mat-chip>
+                }
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let quote">
+                <button mat-icon-button color="warn" (click)="deleteQuote(quote.id)" matTooltip="Remover orçamento">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;" [class.best-row]="isBestQuote(group, row.id)"></tr>
+          </table>
+        }
+      </mat-expansion-panel>
+    }
+  </mat-accordion>
+</div>
